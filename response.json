@@ -1,0 +1,194 @@
+{
+  "code": 0,
+  "summary": {
+    "cost": 13414,
+    "unassigned": 0,
+    "delivery": [27],
+    "amount": [27],
+    "pickup": [0],
+    "service": 3240,
+    "duration": 13414,
+    "waiting_time": 0,
+    "distance": 166576,
+    "computing_times": { "loading": 5, "solving": 2, "routing": 4 }
+  },
+  "unassigned": [],
+  "routes": [
+    {
+      "vehicle": 7,
+      "cost": 6941,
+      "delivery": [13],
+      "amount": [13],
+      "pickup": [0],
+      "service": 1320,
+      "duration": 6941,
+      "waiting_time": 0,
+      "distance": 103815,
+      "steps": [
+        {
+          "type": "start",
+          "location": [39.9315, 32.862166666],
+          "load": [13],
+          "arrival": 28800,
+          "duration": 0,
+          "distance": 0
+        },
+        {
+          "type": "job",
+          "location": [39.9315, 32.862166666],
+          "job": 5,
+          "service": 300,
+          "waiting_time": 0,
+          "load": [10],
+          "arrival": 28800,
+          "duration": 0,
+          "distance": 0
+        },
+        {
+          "type": "job",
+          "location": [39.971555555, 32.818694444],
+          "job": 8,
+          "service": 120,
+          "waiting_time": 0,
+          "load": [5],
+          "arrival": 29100,
+          "duration": 0,
+          "distance": 0
+        },
+        {
+          "type": "job",
+          "location": [39.8185, 32.562527777],
+          "job": 91,
+          "service": 660,
+          "waiting_time": 0,
+          "load": [1],
+          "arrival": 33035,
+          "duration": 3815,
+          "distance": 56050
+        },
+        {
+          "type": "job",
+          "location": [39.601166666, 32.142111111],
+          "job": 48,
+          "service": 240,
+          "waiting_time": 0,
+          "load": [0],
+          "arrival": 36821,
+          "duration": 6941,
+          "distance": 103815
+        }
+      ],
+      "geometry": "cpbhE{~qrF????iJnHaZjWqD~DcOhPmPxQ}ObPsBbC}KdNu@v@eKtH{b@f]oFfEsLrJkRnNeTnPk@`@y@|@oG`KkB|CYVKXE`@hBtJ~@tEzIdd@rEfUzA|HDVXlBZnBj@`EF^BRHx@t@vHl@tI\\vIDhBBdADhEChEA`BGtGYnGOhC[tEc@pGeAbI{@jFoAvGsAvFyAlFcBvFiCfH_CpFoC|FsH`O}DtHeFhKsDhI_EdKeClHmC`JeBlGoBfIyAtHOn@eBnK}AhLu@xHq@jH}@bN_@hK_@dWg@bOaArS}@lMmAdOgBxPmCpSuCdRmAdGaDhPiBhI}AlGqCpKq@`CmDfLeEvMoCvHwFxOiHxSwCrJy@dDsB|Hm@nCwBrKkAfH{@~DYfDaAvHYnCe@hEm@dIW|C]vFs@dRWfTBnDJnIPjMf@rKNpCRfDZrDd@nFd@bFLnA|@lIT`B|@`Gr@fEdCtL`@pBrA|FzBlIlCvJfD`J~EvMrGvNxDbH|BjEjEdHtDxFxCjEdFrGnElFzGfHpGfGfKvIhCrBfFpDhKlHlCnBbCjBvElDrIhHnMtLpDvDlEvE|BfClC`D`FhGjHpJfElGjDdFtAvBfCjE~ApCtAhC~CzF`EbIhDjHxD`J|AtDxDvIrGrMhHrMdE~GlFdI`HpJfItJtBdCrCzCjDlDrIhI`ElD`FbEfDdCtDnCzBzA`BfAxBvAhEhCtGtDlDfBtAt@pHjD~ErB|KfEtGtBpBn@zCz@hKrCjHrBlBp@xBz@hDvAdFjCxErCzElD~BnBpBfBbDbDjCzCjF~GvBjDrBlDfBmBRk@Lk@@q@Eo@U_B_C{LqDgRSgA`@UzAc@jb@eM`{@aXt`@qLh\\aKjz@iWxr@mT~k@}Qp]eKvj@kQzg@sOhT_Gb\\oGrhAuRhuB}^`_AaPj[sFpNkAtMp@|LzC~MrFdJ~GxFlGfGhIhd@br@xg@lu@zr@teAzi@|x@vKxP??h@fBO|AenAnyCqNf^{BlNQtMhAbOvD|NjIdNvx@xh@pdCx_BrcBlgApcBdgAh~AxbAfHnFnHvIptA|~B`q@ziAt_C`_E|kGnrK`t@pmA|d@lx@pb@|s@hh@t|@rk@taAfp@vhAbb@ts@ng@f{@zk@zaApj@``Ahi@x}@ng@p{@ng@n{@~k@hbAzIdO"
+    },
+    {
+      "vehicle": 8,
+      "cost": 6473,
+      "delivery": [7],
+      "amount": [7],
+      "pickup": [0],
+      "service": 1140,
+      "duration": 6473,
+      "waiting_time": 0,
+      "distance": 62761,
+      "steps": [
+        {
+          "type": "start",
+          "location": [39.9315, 32.862166666],
+          "load": [7],
+          "arrival": 28800,
+          "duration": 0,
+          "distance": 0
+        },
+        {
+          "type": "job",
+          "location": [39.923138888, 32.861694444],
+          "job": 56,
+          "service": 300,
+          "waiting_time": 0,
+          "load": [6],
+          "arrival": 28800,
+          "duration": 0,
+          "distance": 0
+        },
+        {
+          "type": "job",
+          "location": [39.867972222, 32.748194444],
+          "job": 34,
+          "service": 180,
+          "waiting_time": 0,
+          "load": [4],
+          "arrival": 32491,
+          "duration": 3391,
+          "distance": 29805
+        },
+        {
+          "type": "job",
+          "location": [39.895944444, 32.782416666],
+          "job": 24,
+          "service": 600,
+          "waiting_time": 0,
+          "load": [3],
+          "arrival": 32671,
+          "duration": 3391,
+          "distance": 29805
+        },
+        {
+          "type": "job",
+          "location": [39.815333333, 32.725138888],
+          "job": 33,
+          "service": 60,
+          "waiting_time": 0,
+          "load": [0],
+          "arrival": 36353,
+          "duration": 6473,
+          "distance": 62761
+        }
+      ],
+      "geometry": "cpbhE{~qrF??iJnHaZjWqD~DcOhPmPxQ}ObPsBbC}KdNu@v@eKtH{b@f]oFfEsLrJkRnNeTnPk@`@y@|@oG`KkB|CYVKXE`@hBtJ~@tEzIdd@rEfUzA|HDVXlBZnBj@`EF^BRHx@t@vHl@tI\\vIDhBr@Gj@D`ARfAfAh@jBdYjxAvA|E~Ubu@fAfHhA|LbFze@tNtp@hD~I~C`FxKfLdDfFjA~D~j@dqChRp_Ad]vcBlQla@~AjHdAx^~AlLfErSBxB@nBi@rNbA`d@f@lSJ`FdUnHtDp@fDRpCDrCQzBYpsBa`@ts@}MfBkAlAw@pAwDRoGc@swAwCkN`QmeBx@mBhCa@vUEjCmA|@eB`IiTt@oBzH{S??{HzSu@nBaIhT}@dBkClAwUDiC`@y@lBaQleBvCjNb@rwASnGqAvDmAv@gBjAus@|MqsB``@{BXsCPqCEgDSuDq@eUoH`Bls@yCxtBStNQhLpM|dBlkAheGDV`@UzAc@jb@eM`{@aXt`@qLh\\aKjz@iWxr@mT~k@}Qp]eKvj@kQzg@sOhT_Gb\\oGrhAuRhuB}^`_AaPj[sFpNkAtMp@|LzC~MrF"
+    },
+    {
+      "vehicle": 9,
+      "cost": 0,
+      "delivery": [7],
+      "amount": [7],
+      "pickup": [0],
+      "service": 780,
+      "duration": 0,
+      "waiting_time": 0,
+      "distance": 0,
+      "steps": [
+        {
+          "type": "start",
+          "location": [39.9315, 32.862166666],
+          "load": [7],
+          "arrival": 28800,
+          "duration": 0,
+          "distance": 0
+        },
+        {
+          "type": "job",
+          "location": [39.934638888, 32.831583333],
+          "job": 13,
+          "service": 420,
+          "waiting_time": 0,
+          "load": [5],
+          "arrival": 28800,
+          "duration": 0,
+          "distance": 0
+        },
+        {
+          "type": "job",
+          "location": [39.942472222, 32.823111111],
+          "job": 12,
+          "service": 360,
+          "waiting_time": 0,
+          "load": [0],
+          "arrival": 29220,
+          "duration": 0,
+          "distance": 0
+        }
+      ],
+      "geometry": "cpbhE{~qrF????"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "vehicles": [
+    {"id":7, "skills":[1,4], "capacity":[14], "time_window": [28800,43200],  "start": [32.853138888, 39.919305555]},
+    {"id":8, "skills":[1,2,3], "capacity":[9], "time_window": [28800,43200],  "start": [32.853138888, 39.919305555]},
+    {"id":9, "skills":[3,4], "capacity":[10], "time_window": [28800,43200],  "start": [32.853138888, 39.919305555]}
+],
+"jobs": [
+    {"id":5, "service":300, "skills":[1], "amount":[3], "time_window":[28800, 43200], "location_index": 1, "description":"Hacettepe U. Matematik B.", "location": [32.862166666, 39.9315]},
+    {"id":24, "service":600, "skills":[2], "amount":[1], "time_window":[28800, 43200], "location_index": 2, "description":"ODTU Matematik B.", "location": [32.782416666, 39.895944444]},
+    {"id":12, "service":360, "skills":[3], "amount":[5], "time_window":[28800, 43200], "location_index": 3, "description":"Gazi U. Matematik B.", "location": [32.823111111, 39.942472222]},
+    {"id":13, "service":420, "skills":[4], "amount":[2], "time_window":[28800, 43200], "location_index": 4, "description":"Ankara U. Matematik B.", "location": [32.831583333, 39.934638888]},
+    {"id":34, "service":180, "skills":[3], "amount":[2], "time_window":[28800, 43200], "location_index": 5, "description":"Bilkent U. Matematik B.", "location": [32.748194444, 39.867972222]},
+    {"id":56, "service":300, "skills":[3], "amount":[1], "time_window":[28800, 43200], "location_index": 6, "description":"TED U. Matematik B.", "location": [32.861694444, 39.923138888]},
+    {"id":91, "service":660, "skills":[4], "amount":[4], "time_window":[28800, 43200], "location_index": 7, "description":"Cankaya U. Matematik B.", "location": [32.562527777, 39.8185]},
+    {"id":33, "service":60, "skills":[2], "amount":[3], "time_window":[28800, 43200], "location_index": 8, "description":"Atilim U. Matematik B.", "location": [32.725138888, 39.815333333]},
+    {"id":8, "service":120, "skills":[4], "amount":[5], "time_window":[28800, 43200], "location_index": 9, "description":"Yildirim Beyazit U. Matematik B.", "location": [32.818694444, 39.971555555]},
+    {"id":48, "service":240, "skills":[4], "amount":[1], "time_window":[28800, 43200], "location_index": 10, "description":"HBV U. Matematik B.", "location": [32.142111111, 39.601166666]}
+]
+}
