@@ -6,38 +6,29 @@ import requests
 import sys
 import itertools
 import random
+import numpy as np
 
 min_cost = [None,float("inf")]
 
-# Cost Function
-def cost(route, m, vehicles, jobs):
-    cost = 0
-    for _id, rt in route.items():
-        for i in range(len(rt)-1):
-            i0 = next((val["location_index"] for (idx,val) in enumerate(jobs) if val["id"] == rt[i]))
-            i1 = next((val["location_index"] for (idx,val) in enumerate(jobs) if val["id"] == rt[i+1]))
-            cost += m[i0][i1]
-            if i == 0:
-                try:
-                    start_index = next((val["start_index"] for (idx,val) in enumerate(vehicles) if val["id"] == _id))
-                    cost += m[start_index][i0] # Start index cost
-                except KeyError: pass
-            if i == len(rt)-2:
-                try:
-                    end_index = next((val["end_index"] for (idx,val) in enumerate(vehicles) if val["id"] == _id))
-                    cost += m[i1][end_index] # End index cost
-                except KeyError: pass
-    if cost < min_cost[1]:
-        min_cost[0] = list(route.values())
-        min_cost[1] = cost
-        print(min_cost)
-    return cost
-
+def partitions(j, v):
+    i = 0
+    f = .25
+    while v != 0:
+        if v == 1:
+            v -= 1
+            yield i, j
+        else:
+            r = int(abs(np.random.normal(j/v, (j/v)*.15, 1)[0]))
+            j = j - r
+            v -= 1
+            f = f * .9
+            yield i, r
+        i += 1
 
 # Monte Carlo VRP solver algorithm
-def mc(rnd, vehicles, jobs, M, partitions, epochs=1000):
+def mc(rnd, vehicles, jobs, M, epochs=1000, p=1000):
     # Random number parameters
-    a, z, m, j = rnd["a"], rnd["z"], rnd["m"], len(jobs)
+    a, z, m, j, v = rnd["a"], rnd["z"], rnd["m"], len(jobs), len(vehicles)
     routes = []
     for n in range(1,epochs):
         # Create a new random number and append to the `z` array
@@ -56,12 +47,12 @@ def mc(rnd, vehicles, jobs, M, partitions, epochs=1000):
         zr = [z[n+1-i]%(j-i) for i in range(j)]
 
         # Loop over each partition
-        for partition in partitions:
+        for _ in range(p):
             route = {} # Initialize route list for this partition
             h = 0
             cost = []
             jobs_idx = [i for i in range(j)] # Jobs' index array
-            for idx, val in enumerate(partition):
+            for idx, val in partitions(j,v):
                 v_name = vehicles[idx]['id'] # Construct current vehicle name
                 route[v_name] = [] 
                 delivery = 0
@@ -135,8 +126,6 @@ def mc(rnd, vehicles, jobs, M, partitions, epochs=1000):
 
 
 def cost_matrix(vehicles, jobs):
-    #32.853138888,39.919305555
-    #"http://localhost:5000/table/v1/car/32.862167,39.931500;32.782417,39.895944;32.823111,39.942472;"
     req = "http://localhost:5000/table/v1/car/"
     points = []
     for vehicle in vehicles:
@@ -171,63 +160,23 @@ def cost_matrix(vehicles, jobs):
         sys.exit('Error while requesting cost matrix!')
 
     M = res.json()["durations"]
-    return M, vehicles, jobs # In python, lists are immutable which means they passed via 'pass by reference'
+    return vehicles, jobs, M # In python, lists are immutable which means they passed via 'pass by reference'
                             # so that, in fact, we don't need to return vehicles and jobs
 
-def accel_asc(n, p):
-    a = [0 for i in range(n + 1)]
-    k = 1
-    y = n - 1
-    while k != 0:
-        x = a[k - 1] + 1
-        k -= 1
-        while 2 * x <= y:
-            a[k] = x
-            y -= x
-            k += 1
-        l = k + 1
-        while x <= y:
-            a[k] = x
-            a[l] = y
-            D = max(a[:k + 2]) - min(a[:k + 2])
-            if len(a[:k + 2]) == p and 1 not in a[:k + 2] and D <= n//p + 1:
-                yield a[:k + 2]
-            x += 1
-            y -= 1
-        a[k] = x + y
-        y = x + y - 1
-        D = max(a[:k + 1]) - min(a[:k + 1])
-        if len(a[:k + 1]) == p and 1 not in a[:k + 1] and D <= n//p + 1:
-            yield a[:k + 1]
 
 def read_data(path, process = False):
     with open(path) as data:
         data = json.load(data)
         if process:
-            M, vehicles, jobs = cost_matrix(data["vehicles"], data["jobs"])
-            v, j = len(vehicles), len(jobs)
-            # partitions = [*itertools.chain.from_iterable(set(itertools.permutations(p)) for p in accel_asc(j, v))]
-            partitions = [j//v for i in range(v)]
-            r = j - ((j//v)*len(partitions))
-            for i in range(r):
-                partitions[i] += 1
-            partitions = [partitions]
-            for _ in range(len(partitions[-1])):
-                cp = partitions[-1].copy()
-                random.shuffle(cp)
-                partitions += [cp]
-            return vehicles, jobs, M, partitions
+            vehicles, jobs, M = cost_matrix(data["vehicles"], data["jobs"])
+            return vehicles, jobs, M
         else:
-            return data["vehicles"], data["jobs"], data["M"], data["partitions"]
+            return data["vehicles"], data["jobs"], data["M"]
 
 def persist_data(path, **data):
     with open(path, 'w') as json_file:
-        output = {"vehicles": data["vehicles"], "jobs": data["jobs"], "M": data["M"], "partitions": data["partitions"]}
+        output = {"vehicles": data["vehicles"], "jobs": data["jobs"], "M": data["M"]}
         json.dump(output, json_file)
-
-    
-
-
 
 
 ################################################################
@@ -249,18 +198,16 @@ rnd_params = [
 
     ]
 
+vehicles, jobs, M = read_data("input_thu.json")
+# persist_data("input_thu.json", vehicles=vehicles, jobs=jobs, M=M, partitions=partitions)
 
-vehicles, jobs, M, partitions = read_data("input.json", process=True)
-# persist_data("input.json", vehicles=vehicles, jobs=jobs, M=M, partitions=partitions)
-# partitions = [[3,3,4],[3,4,3],[4,3,3],[3,2,5],[3,5,2],[5,2,3],[5,3,2],[2,3,5],[2,5,3],[1,1,8],
-#             [1,8,1],[8,1,1],[2,2,6],[2,6,2],[6,2,2],[4,4,2],[4,2,4],[2,4,4],[1,2,7],[1,7,2],
-#             [7,2,1],[7,1,2],[2,1,7],[2,7,1],[1,3,6],[1,6,3],[6,3,1],[6,1,3],[3,1,6],[3,6,1],
-#             [1,4,5],[1,5,4],[5,4,1],[5,1,4],[4,1,5],[4,5,1]]
-epochs = 1000000
-print(partitions)
+epochs = 10**6
+p = 5*10**3
 start = time.time()
 for rnd in rnd_params:
-    mc(rnd, vehicles=vehicles, jobs=jobs, M=M, partitions=partitions, epochs=epochs)
+    mc(rnd, vehicles=vehicles, jobs=jobs, M=M, epochs=epochs, p=p)
 
 print("Time elapsed: " + str(time.time() - start))
 print("Min cost: ", min_cost)
+
+#45s 1433 cost
