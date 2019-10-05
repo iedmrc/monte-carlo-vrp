@@ -12,65 +12,72 @@ min_cost = [None,float("inf")]
 
 def partitions(j, v):
     i = 0
-    f = .3
+    f = .35
     while v != 0:
         if v == 1:
             v -= 1
             yield i, j
         else:
-            if random.random() > .8:
-                r = int(abs(np.random.normal(j/v, (j/v)*.5, 1)[0]))
-            else:
-                r = int(abs(np.random.normal(j/v, (j/v)*f, 1)[0]))
+            # if random.random() > .8:
+            #     r = int(abs(np.random.normal(j/v, (j/v)*.5, 1)[0]))
+            # else:
+            #     r = int(abs(np.random.normal(j/v, (j/v)*f, 1)[0]))
+            r = int(abs(np.random.normal(j/v, (j/v)*f, 1)[0]))
             j = j - r
             v -= 1
             f = round(f * .9, 4)
             yield i, r
         i += 1
 
-def prng(j, g = 0):
+def prng(j, g = 0, z = None):
     zr = []
-    rnd = [{"a":354623, "z":[179875], "m":236481},
-            {"a":11234, "z":[65489], "m":236417},
-            {"a":76982, "z":[17456], "m":33651},
-            {"a":152717, "z":[135623], "m":210321},
-            {"a":197331, "z":[172361], "m":254129},
-            {"a":48271, "z":[172361], "m":2**31-1}, #Lehmer CG
+    rnd = [{"a":354623, "z":179875, "m":236481},
+            {"a":11234, "z":65489, "m":236417},
+            {"a":76982, "z":17456, "m":33651},
+            {"a":152717, "z":135623, "m":210321},
+            {"a":197331, "z":172361, "m":254129},
+            {"a":48271, "z":172361, "m":2**31-1}, #Lehmer CG
             {"a":1071064 , "z":[135623,172361], "m":2**31-19}, #MRG
-            {"a":6364136223846793005, "z":[172361], "m":2**64}, #LCG
-            {"a":197331, "z":[172361], "m":2**31-1}, #ICG
-            {"a":197331, "z":[172361], "m":2**48-59}] #EICG
+            {"a":6364136223846793005, "z":172361, "m":2**64}, #LCG
+            {"a":197331, "z":172361, "m":2**31-1}, #ICG
+            {"a":197331, "z":[172361, None], "m":2**48-59}] #EICG
     if g in [0,1,2,3,4]:
-        a, z, m = rnd[g]["a"], rnd[g]["z"][0], rnd[g]["m"]
+        z = z if z != None else rnd[g]["z"]
+        a, m = rnd[g]["a"], rnd[g]["m"]
         for n in range(j):
             z = a*z%m
             zr += [z%(j-n)]
     elif g == 5: # Lehmer
-        a, z, m = rnd[g]["a"], rnd[g]["z"][0], rnd[g]["m"]
+        z = z if z != None else rnd[g]["z"]
+        a, m = rnd[g]["a"], rnd[g]["m"]
         for n in range(j):
             z = (a*z)%m
             zr += [z%(j-n)]
     elif g == 6: # MRG
-        a, z, m = rnd[g]["a"], rnd[g]["z"], rnd[g]["m"]
-        for n in range(1,j+1):
-            z += [(a*z[n]+2113664*z[n-1])%m]
-            zr += [z[n]%(j-n+1)]
+        z = z if z != None else rnd[g]["z"]
+        a, m = rnd[g]["a"], rnd[g]["m"]
+        for n in range(j):
+            z[0], z[1] = z[1], (a*z[1]+2113664*z[0])%m
+            zr += [z[1]%(j-n)]
     elif g == 7: #LCG
-        a, z, m = rnd[g]["a"], rnd[g]["z"][0], rnd[g]["m"]
+        z = z if z != None else rnd[g]["z"]
+        a, m = rnd[g]["a"], rnd[g]["m"]
         for n in range(j):
             z = (a*z+1)%m
             zr += [z%(j-n)]
     elif g == 8: #ICG
-        a, z, m = rnd[g]["a"], rnd[g]["z"][0], rnd[g]["m"]
+        z = z if z != None else rnd[g]["z"]
+        a, m = rnd[g]["a"], rnd[g]["m"]
         for n in range(j):
             z = (gmpy2.invert(z,m)+1)%m
             zr += [z%(j-n)]
     elif g == 9: #EICG
-        a, z, m = rnd[g]["a"], rnd[g]["z"], rnd[g]["m"]
+        z = z if z != None else rnd[g]["z"]
+        a, m = rnd[g]["a"], rnd[g]["m"]
         for n in range(j):
-            z += [gmpy2.invert(n+1+z[0],m)]
+            z[-1] = gmpy2.invert(n+1+z[0],m)
             zr += [z[n]%(j-n)]
-    return zr
+    return zr, z
 
 
 # Monte Carlo VRP solver algorithm
@@ -79,13 +86,13 @@ def mc(vehicles, jobs, M, epochs=100000, p=1000):
     routes = []
     maxl = 0
     now = tm.time()
+    z = None
     for n in range(epochs):
-        # Create a new random number and append to the `z` array
 
         # if n % 100 == 0:
         print("epoch: ", n, "time elapsed: ", tm.time()-now)
 
-        zr = prng(j, g=5)
+        zr, z = prng(j, g=8, z=z)
 
         # Loop over each partition
         for _ in range(p):
@@ -164,11 +171,7 @@ def mc(vehicles, jobs, M, epochs=100000, p=1000):
                     min_cost[0] = list(route.values())
                     min_cost[1] = cost
                     print(min_cost)
-                # cost(route, M, vehicles, jobs)
-                # print(route,cost(route,M,jobs))
 
-    # pprint(routes)
-    # print(rnd,'\n')
     return routes
 
 
@@ -232,7 +235,7 @@ vehicles, jobs, M = read_data("input_thu.json")
 # persist_data("input_thu.json", vehicles=vehicles, jobs=jobs, M=M, partitions=partitions)
 
 epochs = 10**5
-p = 5*10**4
+p = 10**5
 start = tm.time()
 
 mc(vehicles=vehicles, jobs=jobs, M=M, epochs=epochs, p=p)
