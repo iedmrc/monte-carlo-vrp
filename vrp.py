@@ -18,10 +18,6 @@ def partitions(j, v):
             v -= 1
             yield i, j
         else:
-            # if random.random() > .8:
-            #     r = int(abs(np.random.normal(j/v, (j/v)*.5, 1)[0]))
-            # else:
-            #     r = int(abs(np.random.normal(j/v, (j/v)*f, 1)[0]))
             r = int(abs(np.random.normal(j/v, (j/v)*f, 1)[0]))
             j = j - r
             v -= 1
@@ -84,12 +80,10 @@ def prng(j, g = 0, z = None):
 def mc(vehicles, jobs, M, epochs=100000, p=1000):
     j, v = len(jobs), len(vehicles)
     routes = []
-    maxl = 0
+    maxl, z = 0, None
     now = tm.time()
-    z = None
     for n in range(epochs):
 
-        # if n % 100 == 0:
         print("epoch: ", n, "time elapsed: ", tm.time()-now)
 
         zr, z = prng(j, g=8, z=z)
@@ -234,7 +228,7 @@ def persist_data(path, **data):
 vehicles, jobs, M = read_data("input_thu.json")
 # persist_data("input_thu.json", vehicles=vehicles, jobs=jobs, M=M, partitions=partitions)
 
-epochs = 10**5
+epochs = 5*10**3
 p = 10**5
 start = tm.time()
 
