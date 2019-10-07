@@ -86,9 +86,8 @@ def prng(j, g = 0, z = None):
         a, m = rnd[g]["a"], rnd[g]["m"]
         for n in range(j):
             z[-1] = gmpy2.invert(n+1+z[0],m)
-            zr += [z[n]%(j-n)]
+            zr += [z[-1]%(j-n)]
     return zr, z
-
 
 # Monte Carlo VRP solver algorithm with partitions
 def mcp(vehicles, jobs, M, epochs=100000, g=0, p=1000):
