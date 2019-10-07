@@ -7,6 +7,20 @@ import sys
 import itertools
 import random
 import numpy as np
+import argparse
+
+parser = argparse.ArgumentParser()
+
+parser.add_argument("-i", "--input", type=str, default="input_thu.json",
+        help="Input file path.")
+parser.add_argument("-e", "--epochs", type=int, default=10**6,
+        help="Epochs size.")
+parser.add_argument("-p", "--partitions", type=int, default=0,
+        help="Partitions size. If provided, 'mcp' will be run instead of 'mc'")
+parser.add_argument("-g", "--prng", type=int, default=0,
+        help="PRNG generation method.")
+
+args = parser.parse_args()
 
 min_cost = [None,float("inf")]
 
@@ -76,23 +90,20 @@ def prng(j, g = 0, z = None):
     return zr, z
 
 
-# Monte Carlo VRP solver algorithm
-def mcp(vehicles, jobs, M, epochs=100000, p=1000):
+# Monte Carlo VRP solver algorithm with partitions
+def mcp(vehicles, jobs, M, epochs=100000, g=0, p=1000):
     j, v = len(jobs), len(vehicles)
     routes = []
     maxl, z = 0, None
     now = tm.time()
     for n in range(epochs):
-
         print("epoch: ", n, "time elapsed: ", tm.time()-now)
-
-        zr, z = prng(j, g=8, z=z)
+        zr, z = prng(j, g=g, z=z)
 
         # Loop over each partition
         for _ in range(p):
-            route = {} # Initialize route list for this partition
+            route, cost = {}, []
             h = 0
-            cost = []
             jobs_idx = [i for i in range(j)] # Jobs' index array
             for idx, val in partitions(j,v):
                 v_name = vehicles[idx]['id'] # Construct current vehicle name
@@ -103,7 +114,6 @@ def mcp(vehicles, jobs, M, epochs=100000, p=1000):
                 i0, i1 = None, None
                 for _ in range(val):
 
-                    # job = next((item for item in jobs if item["id"] == jobs_idx[zr[h]]))
                     job = jobs[jobs_idx[zr[h]]]
                     job_keys = job.keys()
                     # Check the eligibility of the vehicle's skills for the job
@@ -156,7 +166,6 @@ def mcp(vehicles, jobs, M, epochs=100000, p=1000):
                     print(route, len(l))
                     print("---------------------------------------------")
                     maxl = len(l)
-                
                 break
             else:
                 routes += [route]
@@ -165,9 +174,84 @@ def mcp(vehicles, jobs, M, epochs=100000, p=1000):
                     min_cost[0] = list(route.values())
                     min_cost[1] = cost
                     print(min_cost)
-
+    print(maxl)
     return routes
 
+# Monte Carlo VRP solver algorithm
+def mc(vehicles, jobs, M, g=0, epochs=100000):
+    j, z = len(jobs), None
+    routes = []
+    now = tm.time()
+    for n in range(epochs):
+        if n % 10000 == 0:
+            print("epoch: ", n, "time elapsed: ", tm.time()-now)
+
+        zr, z = prng(j, g=g, z=z)
+        h, cost = 0, 0
+        route = {} # Initialize route list for this partition
+        jobs_idx = [i for i in range(j)] # Jobs' index array
+        for vehicle in vehicles:
+            v_name = vehicle['id'] # Construct current vehicle name
+            route[v_name] = [] 
+            delivery, i = 0, 0
+            time = vehicle["time_window"][0]
+            i0, i1 = None, None
+            while time < vehicle["time_window"][1]:
+
+                job = jobs[jobs_idx[zr[h]]]
+                job_keys = job.keys()
+
+                # Check the eligibility of the vehicle's skills for the job
+                try:
+                    if not all(elem in vehicle["skills"] for elem in job["skills"]):
+                        break
+                except KeyError: pass
+
+                try:
+                    # First-element-only cumulative delivery-amount
+                    delivery += job["amount"][0] 
+                    # Check for the cumulative delivery-amount 
+                    if delivery > vehicle["capacity"][0]:
+                        break
+                except KeyError: pass
+
+                # Check arrival time
+                if "time_window" in job_keys and (time < job["time_window"][0] or time > job["time_window"][1]):
+                    break
+                
+                i1 = job["location_index"]
+                if i == 0 and "start_index" in vehicle.keys():
+                    i0 = vehicle["start_index"]
+                    cost += M[i0][i1]
+                    time += M[i0][i1]
+                    i0 = i1
+                # elif i == val - 1 and "end_index" in vehicle.keys():
+                #     i0 = i1
+                #     i1 = vehicle["end_index"]
+                #     cost[-1] += M[i0][i1]
+                #     time += M[i0][i1]                        
+                else:
+                    cost += M[i0][i1]
+                    time += M[i0][i1]
+                    i0 = i1
+                
+                time += job["service"]
+
+                # Assign the node to current vehicle as next job
+                route[v_name] +=  [job["id"]]
+                del jobs_idx[zr[h]]
+                h += 1
+                i += 1
+            else: continue
+            break
+        else:
+            # routes += [route, cost]
+            # cost = sum(cost)
+            if cost < min_cost[1]:
+                min_cost[0] = list(route.values())
+                min_cost[1] = cost
+                print("min cost: ", cost)
+    return routes
 
 def cost_matrix(vehicles, jobs):
     req = "http://localhost:5000/table/v1/car/"
@@ -223,16 +307,20 @@ def persist_data(path, **data):
         json.dump(output, json_file)
 
 
-################################################################
+# --------------------------------------------------------------------------------------
 
-vehicles, jobs, M = read_data("input_thu.json")
+vehicles, jobs, M = read_data(args.input)
 # persist_data("input_thu.json", vehicles=vehicles, jobs=jobs, M=M, partitions=partitions)
 
-epochs = 5*10**3
-p = 10**5
+epochs = args.epochs
+p = args.partitions
+g = args.prng
 start = tm.time()
 
-mc(vehicles=vehicles, jobs=jobs, M=M, epochs=epochs, p=p)
+if p != 0:
+    mcp(vehicles=vehicles, jobs=jobs, M=M, epochs=epochs, g=g, p=p)
+else:
+    mc(vehicles=vehicles, jobs=jobs, M=M, epochs=epochs, g=g)
 
 print("Time elapsed: " + str(tm.time() - start))
 print("Min cost: ", min_cost)
