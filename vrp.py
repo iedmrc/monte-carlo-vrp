@@ -77,7 +77,7 @@ def prng(j, g = 0, z = None):
 
 
 # Monte Carlo VRP solver algorithm
-def mc(vehicles, jobs, M, epochs=100000, p=1000):
+def mcp(vehicles, jobs, M, epochs=100000, p=1000):
     j, v = len(jobs), len(vehicles)
     routes = []
     maxl, z = 0, None
